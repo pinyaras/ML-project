@@ -47,11 +47,21 @@ def main():
 
                 for action in xrange(env.nlinks[n]):
                     reward, next_state = env.pseudostep(action)
+                    #print "state:{} action:{}".format((n,dest), action)
                     agent.learn(current_state, next_state, reward, action, done, env.nlinks)
-                action = agent.act(current_state, env.nlinks)
+                action = agent.act(current_state, env.nlinks, True)
+                # Random
+                # action = np.random.choice(env.nlinks[n],1)[0]
+                # Precompute Distance Stuff
+                # best = env.distance[n][dest]
+                # for link in xrange(env.nlinks[n]):
+                # if env.distance[env.links[n][link]][dest] + 1 == best:
+                # action = link
 
-                # print "Qx --- time:{}, state_pair:{}, current_state:{}, n:{}, dest:{}, env.nlinks[n]:{}, action:{}, q+s:{}, packet_count:{}".format(
-                #     t, state_pair, current_state, n, dest, env.nlinks[n], action, reward, env.count_packet)
+                print" send from:{} to dest:{}, via action:{}, which takes us to:{}".format( n, dest, action, env.links[n][action])
+
+                print "Qx --- time:{}, state_pair:{}, current_state:{}, n:{}, dest:{}, env.nlinks[n]:{}, action:{}, q+s:{}, packet_count:{}".format(
+                    t, state_pair, current_state, n, dest, env.nlinks[n], action, reward, env.count_packet)
 
 
                 state_pair, reward, done, _ = env.step(action)
@@ -68,9 +78,9 @@ def main():
                 # print("current_state: ", current_state, "action: ", "next_state:", next_state, "a1:", "reward: ", reward)
                 # print(current_state)
 
-                # print "Qy --- time:{}, state_pair:{}, next_state:{}, n:{}, dest:{}, T's:{}, packet_count:{} ".format(
-                #     t, state_pair, next_state, n, dest, reward, env.count_packet)
-                # print("----------------------------------------------------------------------------------------------------------------------------------------")
+                print "Qy --- time:{}, state_pair:{}, next_state:{}, n:{}, dest:{}, T's:{}, packet_count:{} ".format(
+                    t, state_pair, next_state, n, dest, reward, env.count_packet)
+                print("----------------------------------------------------------------------------------------------------------------------------------------")
                 r_sum_best += reward
                 avg_reward_random.append(reward)
 
@@ -85,6 +95,9 @@ def main():
                         print "q learning with callmean:{} time:{}, average delivery time:{}, length of average route:{}, r_sum_best:{}".format(
                             i, t, float(env.total_routing_time) / float(env.routed_packets),
                             float(env.total_hops) / float(env.routed_packets), r_sum_best)
+                        # env.routed_packets = 0
+                        # env.total_routing_time = 0
+                        # env.total_hops = 0
                         #print(env.routing_time)
                         #print(agent.q.shape)
                         # print(agent.q)
@@ -101,8 +114,8 @@ def main():
                         # plt.xlabel('Iterations')
                         # plt.ylabel('routing_time')
                         # plt.show()
-                        x_rtrace = np.arange(0, len(env.avg_lists), 1)
-                        y_rtrace = np.array(env.avg_lists)
+                        x_rtrace = np.arange(0, len(env.routing_time), 1)
+                        y_rtrace = np.array(env.routing_time)
                         plt.plot(x_rtrace, y_rtrace)
                         # plt.plot(rtrace)
                         plt.xlabel('Iterations')

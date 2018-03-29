@@ -18,7 +18,7 @@ import pandas as pd
 def main():
     callmean = 1.0  # network load
     avg_delays = []
-    for i in range(10):
+    for i in range(4):
         callmean += 1.0
         env = NetworkSimulatorEnv()
         state_pair = env._reset()
@@ -109,7 +109,7 @@ def main():
 
                         for i in range(len(avg_route)):
                             if avg_route[i] == 0.0:
-                                avg_route[i] = 1.0
+                                avg_route[i] = 0.00000000000000000000000000000000000000001
 
                         avg_t = map(truediv, avg_delay, avg_route)
 

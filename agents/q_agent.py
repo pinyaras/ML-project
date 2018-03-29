@@ -25,6 +25,7 @@ class networkTabularQAgent(object):
         for src in range(num_nodes):
             for dest in range(num_nodes):
                 for action in range(nlinks[src]):
+                    #Initialize the reward with distance of shortestpath.
                     self.q[src][dest][action] = distance[src][dest]
 
     # def epsilon_greed(self, epsilon, s):

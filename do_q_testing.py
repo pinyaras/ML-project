@@ -18,6 +18,8 @@ def main():
     #     callmean += 1.0
     i=1
     env = NetworkSimulatorEnv()
+    print(env.sources)
+    print(env.dests)
     state_pair = env._reset()
     env.callmean = callmean
     agent = networkTabularQAgent(env.nnodes, env.nedges, env.distance, env.nlinks)

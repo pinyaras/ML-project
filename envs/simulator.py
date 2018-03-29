@@ -77,8 +77,12 @@ class NetworkSimulatorEnv(gym.Env):
 
         self.events = 0
 
-        self.sources = [52, 63, 21, 9, 96, 1, 89, 0, 102, 67, 21, 48, 110, 16, 68, 112, 88, 24, 6, 64, 28, 25, 0, 72, 63, 45, 18, 23, 33, 86, 30, 25, 56, 35, 81, 107, 0, 56, 71, 3, 46, 47, 24, 53, 20, 95, 53, 67, 58, 60, 28, 99, 14, 16, 28, 25, 7, 65, 100, 52, 4, 100, 13, 42, 59, 15, 35, 77, 89, 63, 35, 42, 56, 69, 61, 74, 73, 24, 58, 7, 0, 113, 5, 14, 37, 103, 63, 10, 69, 59, 63, 55, 25, 77, 65, 34, 0, 41, 9, 46, 18, 54, 35, 75, 41, 105, 8, 113, 32, 108, 55, 19, 64, 19, 19, 95, 47, 40, 114, 14, 17, 10, 51]
-        self.dests = [77, 21, 65, 35, 80, 59, 78, 72, 112, 2, 80, 101, 2, 57, 0, 13, 42, 72, 19, 56, 66, 22, 50, 80, 16, 24, 89, 110, 65, 113, 71, 87, 68, 52, 87, 112, 8, 95, 74, 79, 18, 50, 83, 101, 38, 31, 114, 109, 100, 58, 38, 53, 83, 11, 67, 57, 83, 49, 36, 80, 79, 60, 30, 102, 86, 69, 91, 37, 109, 28, 56, 65, 55, 42, 58, 4, 83, 16, 98, 96, 14, 66, 73, 97, 28, 40, 43, 28, 90, 40, 49, 74, 21, 59, 77, 34, 82, 103, 39, 23, 2, 36, 93, 68, 85, 88, 90, 115, 35, 27, 43, 103, 71, 3, 35, 6, 97, 7, 54, 10, 93, 35, 66]
+        # self.sources = random.randint(range(0, 35), 100)
+        # self.dests = random.randint(range(0, 35), 100)
+        self.sources = random.sample(range(0, 35), 35)
+        self.dests = random.sample(range(0, 35), 35)
+        # self.sources = [52, 63, 21, 9, 96, 1, 89, 0, 102, 67, 21, 48, 110, 16, 68, 112, 88, 24, 6, 64, 28, 25, 0, 72, 63, 45, 18, 23, 33, 86, 30, 25, 56, 35, 81, 107, 0, 56, 71, 3, 46, 47, 24, 53, 20, 95, 53, 67, 58, 60, 28, 99, 14, 16, 28, 25, 7, 65, 100, 52, 4, 100, 13, 42, 59, 15, 35, 77, 89, 63, 35, 42, 56, 69, 61, 74, 73, 24, 58, 7, 0, 113, 5, 14, 37, 103, 63, 10, 69, 59, 63, 55, 25, 77, 65, 34, 0, 41, 9, 46, 18, 54, 35, 75, 41, 105, 8, 113, 32, 108, 55, 19, 64, 19, 19, 95, 47, 40, 114, 14, 17, 10, 51]
+        # self.dests = [77, 21, 65, 35, 80, 59, 78, 72, 112, 2, 80, 101, 2, 57, 0, 13, 42, 72, 19, 56, 66, 22, 50, 80, 16, 24, 89, 110, 65, 113, 71, 87, 68, 52, 87, 112, 8, 95, 74, 79, 18, 50, 83, 101, 38, 31, 114, 109, 100, 58, 38, 53, 83, 11, 67, 57, 83, 49, 36, 80, 79, 60, 30, 102, 86, 69, 91, 37, 109, 28, 56, 65, 55, 42, 58, 4, 83, 16, 98, 96, 14, 66, 73, 97, 28, 40, 43, 28, 90, 40, 49, 74, 21, 59, 77, 34, 82, 103, 39, 23, 2, 36, 93, 68, 85, 88, 90, 115, 35, 27, 43, 103, 71, 3, 35, 6, 97, 7, 54, 10, 93, 35, 66]
 
         self.next_source = 0
         self.next_dest = 0
@@ -290,7 +294,7 @@ class NetworkSimulatorEnv(gym.Env):
         #Immediate raward = queuing time of node X + transimission time of X to Y, r = q+s
         reward =  time_in_queue + self.internode
 
-        #if the link wasnt good
+        #if the link is down, no such link, return (x,d)
         if action < 0 or action not in self.links[current_node]:
             return reward, (current_node, current_event.dest)
 
@@ -301,6 +305,7 @@ class NetworkSimulatorEnv(gym.Env):
             # get the estimate of x's neighbor, node y
             if next_node != current_event.dest:
                 next_time = max(self.enqueued[next_node]+self.interqueuen[next_node], current_time + self.internode) #change this to nexttime = Max(enqueued[n_to]+interqueuen[n_to], curtime+internode); eventually
+                #reward = max(self.enqueued[next_node]+self.interqueuen[next_node], current_time + self.internode) #change this to nexttime = Max(enqueued[n_to]+interqueuen[n_to], curtime+internode); eventually
 
             return reward, (next_node, current_event.dest)
 
