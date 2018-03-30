@@ -18,8 +18,8 @@ import pandas as pd
 def main():
     callmean = 1.0  # network load
     avg_delays = []
-    for i in range(4):
-        callmean += 1.0
+    for i in range(10):
+        callmean += 10.0
         env = NetworkSimulatorEnv()
         state_pair = env._reset()
         env.callmean = callmean
@@ -66,14 +66,14 @@ def main():
                 # #  65
                 # print(env.nlinks)
                 # print(env.nlinks[n])
-                #action = agent.act(current_state, env.nlinks, True)
                 for action in xrange(env.nlinks[n]):
                     reward, next_state = env.pseudostep(action)
                     agent.learn(current_state, next_state, reward, action, done, env.nlinks)
-                # Random action
-                #action = agent.act(current_state, env.nlinks)
+                # greedy pick from q-table without observe next state
                 action = agent.act(current_state, env.nlinks, True)
-
+                # action = agent.act(current_state, env.nlinks, True)
+                # reward, next_state = env.pseudostep(action)
+                # agent.learn(current_state, next_state, reward, action, done, env.nlinks)
                 # print(action)
 
                 state_pair, reward, done, _ = env.step(action)
@@ -89,7 +89,7 @@ def main():
                 rewards.append(reward)
                 r_sum_random += reward
                 avg_reward_random.append(r_sum_random)
-                steps.append(t + 1)
+
                 avg_delay.append(float(env.total_routing_time))
                 avg_route.append(float(env.routed_packets))
 
