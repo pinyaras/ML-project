@@ -3,7 +3,8 @@ import numpy as np
 from random import random
 from gym import spaces, envs
 from envs.simulator import NetworkSimulatorEnv
-
+import matplotlib.pyplot as plt
+from operator import truediv
 
 
 class networkTabularQAgent(object):
@@ -79,66 +80,65 @@ class networkTabularQAgent(object):
 	#print("Q_Matrix_state: ", self.q[n,dest,:])
 
 
-#     def train(self, current_event, next_event, reward, action, done, nlinks):
-#
-#         print(self.q)
-#         print(self.q.shape)
-#
-# agent = networkTabularQAgent(env)
-# start = [0, 0]
-# # increase epsilon to explore more
-# rtrace, steps, trace = agent.train(start,
-#                                    gamma=0.99,
-#                                    alpha=0.9,
-#                                    epsilon=0.1,
-#                                    maxiter=100,
-#                                    maxstep=1000)
+    def train(self ):
+        env = NetworkSimulatorEnv()
+        callmean = 1.0
+        i=1
+        max_t = 10000
+        env.callmean = callmean
+        done = False
+        state_pair = env._reset()
+        config = self.config
 
-        # callmean = 1.0  # network load
-        # i = 1
-        #
-        # env = NetworkSimulatorEnv()
-        # #get current state
-        # state_pair = env._reset()
-        # env.callmean = callmean
-        #
-        # done = False
-        #
-        # for t in range(10001):
-        #
-        #     if not done:
-        #         rewards = []
-        #         current_state = state_pair[1]
-        #         # print(current_state)
-        #         n = current_state[0]
-        #         # print(n)
-        #         dest = current_state[1]
-        #         # print(dest)
-        #
-        #         for action in xrange(env.nlinks[n]):
-        #             reward, next_state = env.pseudostep(action)
-        #             agent.learn(current_state, next_state, reward, action, done, env.nlinks)
-        #
-        #         action = agent.act(current_state, env.nlinks)
-        #         state_pair, reward, done, _ = env.step(action)
-        #
-        #         next_state = state_pair[0]
-        #         agent.learn(current_state, next_state, reward, action, done, env.nlinks)
-        #         # print("current_state: ", current_state, "action: ", "next_state:", next_state, "a1:", "reward: ", reward)
-        #         # print(current_state)
-        #         r_sum_random += reward
-        #         rewards.append(reward)
-        #
-        #         if t % 10000 == 0:
-        #             # rtrace.append(np.sum(rewards))
-        #
-        #             if env.routed_packets != 0:
-        #                 print "q learning with callmean:{} time:{}, average delivery time:{}, length of average route:{}, r_sum_random:{}".format(
-        #                     i, t, float(env.total_routing_time) / float(env.routed_packets),
-        #                           float(env.total_hops) / float(env.routed_packets), r_sum_random)
-        #
-        #
-        #
-        #             current_state = state_pair[1]
-        #             n = current_state[0]
-        #             dest = current_state[1]
+        r_sum_random =0
+        avg_delay = []
+        avg_route = []
+        for t in range(max_t + 1):
+            if not done:
+                current_state = state_pair[1]
+                n = current_state[0]
+                dest = current_state[1]
+
+                # for action in xrange(env.nlinks[n]):
+                #     reward, next_state = env.pseudostep(action)
+                #     self.learn(current_state, next_state, reward, action, done, env.nlinks)
+
+                action = self.act(current_state, env.nlinks)
+                state_pair, reward, done, _ = env.step(action)
+
+                next_state = state_pair[0]
+                self.learn(current_state, next_state, reward, action, done, env.nlinks)
+                r_sum_random += reward
+
+                avg_delay.append(float(env.total_routing_time))
+                avg_route.append(float(env.routed_packets))
+
+
+                if t % max_t == 0:
+
+                    if env.routed_packets != 0:
+                        print "q learning with callmean:{} time:{}, average delivery time:{}, length of average route:{}, r_sum_random:{}".format(
+                            i, t, float(env.total_routing_time) / float(env.routed_packets),
+                                  float(env.total_hops) / float(env.routed_packets), r_sum_random)
+                        for i in range(len(avg_route)):
+                            if avg_route[i] == 0.0:
+                                avg_route[i] = 0.00000000000000000000000000000000000000001
+
+                        avg_t = map(truediv, avg_delay, avg_route)
+
+                        # my_dict = {'Time': steps, 'total_routing_time': avg_delay, 'routed_packets': avg_route, 'Avg delivery time':avg_t }
+                        # trace = pd.DataFrame(my_dict)
+                        # trace.to_csv('trace.csv')
+                        # avg_t = np.diff(avg_t)
+                        # print(avg_t)
+                        # rtrace.append(rewards)
+                        # avg_delays.append(r_sum_best)
+                        x_rtrace = np.arange(0, len(avg_t), 1)
+                        y_rtrace = np.array(avg_t)
+                        plt.plot(x_rtrace, y_rtrace)
+                        # plt.plot(rtrace)
+                        plt.xlabel('Iterations')
+                        plt.ylabel('avg delivery time in train')
+
+                        plt.show()
+

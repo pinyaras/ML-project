@@ -102,7 +102,7 @@ def main():
                     agent.learn(current_state, next_state, reward, action, done, env.nlinks)
                     r_sum_best += reward
                     # avg_delay.append(float(env.total_routing_time))
-
+                    print("testing")
                     if env.routed_packets != 0:
                         print "q learning with callmean:{} time:{}, average delivery time:{}, length of average route:{}, r_sum_best:{}".format(
                             i, t, float(env.total_routing_time) / float(env.routed_packets),

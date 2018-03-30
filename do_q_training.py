@@ -143,6 +143,7 @@ def test():
     i=1
     env = NetworkSimulatorEnv()
     state_pair = env._reset()
+    test_rest = state_pair.copy()
     env.callmean = callmean
     agent = networkTabularQAgent(env.nnodes, env.nedges, env.distance, env.nlinks)
     done = False
