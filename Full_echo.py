@@ -18,7 +18,7 @@ import pandas as pd
 def main():
     callmean = 1.0  # network load
     avg_delays = []
-    for i in range(10):
+    for i in range(1):
         callmean += 1.0
         env = NetworkSimulatorEnv()
         state_pair = env._reset()
@@ -35,7 +35,8 @@ def main():
 
         # Initialize Q-table from Q-agent
         config = agent.config
-
+        shortestpath = np.min(agent.q, axis = 2)
+        print(shortestpath)
         for t in range(20001):
             rewards = []
             if not done:
