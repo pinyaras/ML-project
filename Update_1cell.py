@@ -18,7 +18,7 @@ import pandas as pd
 def main():
     callmean = 1.0  # network load
     avg_delays = []
-    for i in range(10):
+    for i in range(3):
         callmean += 1.0
         env = NetworkSimulatorEnv()
         state_pair = env._reset()
@@ -37,7 +37,6 @@ def main():
         config = agent.config
 
         for t in range(20001):
-            rewards = []
             if not done:
 
                 '''
@@ -66,9 +65,21 @@ def main():
                 # #  65
                 # print(env.nlinks)
                 # print(env.nlinks[n])
+                rewards = []
+                next_states = []
+                min_dict = {}
                 for action in xrange(env.nlinks[n]):
+
                     reward, next_state = env.pseudostep(action)
-                    agent.learn(current_state, next_state, reward, action, done, env.nlinks)
+                    min_dict[next_state] = reward
+                    #min(min_dict, key=min_dict.get)
+
+                next_state = min(min_dict, key = min_dict.get)
+                reward = min_dict.values()
+
+                agent.learn(current_state, next_state, reward, action, done, env.nlinks)
+
+
                 # greedy pick from q-table without observe next state
                 action = agent.act(current_state, env.nlinks, True)
                 # action = agent.act(current_state, env.nlinks, True)

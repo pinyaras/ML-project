@@ -18,7 +18,7 @@ import pandas as pd
 def main():
     callmean = 1.0  # network load
     avg_delays = []
-    for i in range(10):
+    for i in range(3):
         callmean += 1.0
         env = NetworkSimulatorEnv()
         state_pair = env._reset()
@@ -66,22 +66,25 @@ def main():
                 # #  65
                 # print(env.nlinks)
                 # print(env.nlinks[n])
-                for action in xrange(env.nlinks[n]):
-                    reward, next_state = env.pseudostep(action)
-                    agent.learn(current_state, next_state, reward, action, done, env.nlinks)
-                # greedy pick from q-table without observe next state
                 action = agent.act(current_state, env.nlinks, True)
+                reward, next_state = env.pseudostep(action)
+                agent.learn(current_state, next_state, reward, action, done, env.nlinks)
+
+                #agent.learn(current_state, next_state, reward, action, done, env.nlinks)
+
+                # for action in xrange(env.nlinks[n]):
+                #     reward, next_state = env.pseudostep(action)
+                #
+                # agent.learn(current_state, next_state, reward, action, done, env.nlinks)
+                # greedy pick from q-table without observe next state
                 # action = agent.act(current_state, env.nlinks, True)
                 # reward, next_state = env.pseudostep(action)
                 # agent.learn(current_state, next_state, reward, action, done, env.nlinks)
                 # print(action)
+                action = agent.act(current_state, env.nlinks, True)
 
                 state_pair, reward, done, _ = env.step(action)
 
-                # print("state2",state_pair)
-                # ('state2', ((12, 32), (31, 25)))
-                # S2
-                # no a1?
                 next_state = state_pair[0]
                 agent.learn(current_state, next_state, reward, action, done, env.nlinks)
                 # print("current_state: ", current_state, "action: ", "next_state:", next_state, "a1:", "reward: ", reward)
