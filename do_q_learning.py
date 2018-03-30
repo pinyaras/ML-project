@@ -52,7 +52,7 @@ def main():
                     reward, next_state = env.pseudostep(action)
                     agent.learn(current_state, next_state, reward, action, done, env.nlinks)
                 #Radnom action
-                action = agent.act(current_state, env.nlinks, True)
+                action = agent.act(current_state, env.nlinks)
 
                 state_pair, reward, done, _ = env.step(action)
 
