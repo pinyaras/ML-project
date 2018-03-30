@@ -50,7 +50,6 @@ def main():
                 env.nlinks[3] = 2
 
                 '''
-
                 # print("state1",state_pair)
                 # ('state1', ((1, 32), (12, 32)))
 

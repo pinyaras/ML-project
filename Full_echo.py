@@ -69,7 +69,6 @@ def main():
                 # print(env.nlinks[n])
                 for action in xrange(env.nlinks[n]):
                     reward, next_state = env.pseudostep(action)
-
                 agent.learn(current_state, next_state, reward, action, done, env.nlinks)
                 # greedy pick from q-table without observe next state
                 action = agent.act(current_state, env.nlinks, True)

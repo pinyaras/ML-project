@@ -15,7 +15,7 @@ from mpl_toolkits.mplot3d import Axes3D
 def main():
     callmean = 1.0 # network load
     avg_delays = []
-    avg_delay = []
+
     for i in range(10):
         callmean += 1.0
         env = NetworkSimulatorEnv()
@@ -29,6 +29,8 @@ def main():
         avg_reward_random = []
         avg_reward_best = []
 
+        avg_delay = []
+        avg_route = []
 
         #Initialize Q-table from Q-agent
         config = agent.config
@@ -63,6 +65,9 @@ def main():
                 rewards.append(reward)
                 r_sum_random += reward
                 avg_reward_random.append(r_sum_random)
+
+                avg_delay.append(float(env.total_routing_time))
+                avg_route.append(float(env.routed_packets))
 
                 # if t == 1:
                 #     env.routed_packets = 1
