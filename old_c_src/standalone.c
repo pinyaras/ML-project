@@ -1,7 +1,9 @@
 #define STANDALONE_EXTERN
+#include <stdarg.h>
 #include "standalone.h"
 #include <math.h>
 #include <sys/time.h>
+#include <ctype.h>
 
 char *XNnewString(p)
      char *p;
@@ -80,7 +82,7 @@ List * cons(x,y)
   c->car = (List *) x;
   c->cdr = (List *) y;
 
-  return(c); 
+  return(c);
 }
 
 void free_list(l)
@@ -101,7 +103,7 @@ List * nlist(n,args)
 {
   List *l=NIL;
 
-  for (;n>=0;--n) 
+  for (;n>=0;--n)
     PUSH((&args)[n],l);
   return l;
 }
@@ -160,7 +162,7 @@ List *append(list1, list2)
   else
     return copylist(list2);
 }
-		
+
 List *nconc(list1, list2)
      register List *list1, *list2;
 {
@@ -185,30 +187,27 @@ List *memq(item, in_list)
 #include <stdarg.h>
 #include <stdio.h>
 
-void XNfatal(va_alist)
-     va_dcl
+void XNfatal(char *fmt, ...)
 {
-  char *form;
-  va_list args;
+  va_list ap;
 
-  va_start(args);
-  form = va_arg(args,char *);
-  vsprintf(lowio_character_buffer,form,args);
+  va_start(ap, fmt);
+  fmt = va_arg(ap,char *);
+  vsprintf(lowio_character_buffer,fmt,ap);
   fprintf(stderr,"Fatal: %s",lowio_character_buffer);
   exit(3);
 }
 
-void XNwarning(va_alist)
-     va_dcl
+void XNwarning(char *fmt, ...)
 {
-  char *form;
-  va_list args;
+  va_list ap;
   char buff[1000];
 
-  va_start(args);
-  form = va_arg(args,char *);
-  vsprintf(buff,form,args);
+  va_start(ap, fmt);
+  fmt = va_arg(ap,char *);
+  vsprintf(buff,fmt,ap);
   fprintf(stderr,"Warning: %s",buff);
+  va_end(ap);
 }
 
 #define fsleep(x) \

@@ -110,7 +110,7 @@ STANDALONE_EXTERN char seed_string_buffer[20];
 /* Allocation */
 
 STANDALONE_EXTERN char *XNnewString();
-STANDALONE_EXTERN void XNwarning(), XNfatal();
+STANDALONE_EXTERN void XNwarning(char *, ...), XNfatal(char *, ...);
 STANDALONE_EXTERN char lowio_character_buffer[1000];
 
 /*
