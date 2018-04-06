@@ -1,4 +1,4 @@
-#!/usr/local/bin/wish -f
+#!/usr/bin/wish -f
 
 set nodesize 10
 set linewidth 3
