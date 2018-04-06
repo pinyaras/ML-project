@@ -15,16 +15,18 @@ from mpl_toolkits.mplot3d import Axes3D
 # then tests the value of the learning by every 1000 iterations using the best choice and printing the reward
 ####
 
+
 def main():
     callmean = 1.0 # network load
     avg_delays = []
+    env = NetworkSimulatorEnv()
+    state_pair = env._reset()
+    agent = networkTabularQAgent(env.nnodes, env.nedges, env.distance, env.nlinks)
 
     for i in range(1):
         callmean += 1.0
-        env = NetworkSimulatorEnv()
-        state_pair = env._reset()
+
         env.callmean = callmean
-        agent = networkTabularQAgent(env.nnodes, env.nedges, env.distance, env.nlinks)
         done = False
         r_sum_random = r_sum_best = 0
         rtrace = []
@@ -40,7 +42,7 @@ def main():
         #Initialize Q-table from Q-agent
         config = agent.config
 
-        for t in range(20001):
+        for t in range(50001):
             rewards = []
             if not done:
                 #state
@@ -59,7 +61,8 @@ def main():
                     reward, next_state = env.pseudostep(action)
                     agent.learn(current_state, next_state, reward, action, done, env.nlinks)
                 #Radnom action
-                action = agent.act(current_state, env.nlinks)
+                action = agent.act(current_state, env.nlinks, True)
+                #action = agent.act_eps(current_state, env.nlinks, 0.1)
 
                 state_pair, reward, done, _ = env.step(action)
 
@@ -79,7 +82,7 @@ def main():
                 # steps.append(t + 1)
                 # avg_delay.append(float(env.total_routing_time))
                # print(avg_delay)
-                if t % 20000 == 0:
+                if t % 50000 == 0:
                     # rtrace.append(np.sum(rewards))
                     # avg_delay.append(float(env.total_routing_time) / float(env.routed_packets))
 
@@ -95,6 +98,7 @@ def main():
                         avg_t = map(truediv, avg_delay, avg_route)
                         x_rtrace = np.arange(0, len(avg_t), 1)
                         y_rtrace = np.array(avg_t)
+
                         plt.plot(x_rtrace, y_rtrace)
                         #    plt.plot(rtrace)
                         plt.xlabel('Iterations')
@@ -104,23 +108,27 @@ def main():
                         break
                         # print("state_r_sum_random", current_state)
     #Test
-    env = NetworkSimulatorEnv()
+    #env = NetworkSimulatorEnv()
     state_pair = env._reset()
-    agent = networkTabularQAgent(env.nnodes, env.nedges, env.distance, env.nlinks)
+    #agent = networkTabularQAgent(env.nnodes, env.nedges, env.distance, env.nlinks)
     done = False
     avg_delay_test = []
     avg_route_test = []
     r_sum_best = 0
     i = 1
-    for t in range(20001):
+    for t in range(50001):
         if not done:
             current_state = state_pair[1]
             n = current_state[0]
             dest = current_state[1]
 
-            for action in xrange(env.nlinks[n]):
-                reward, next_state = env.pseudostep(action)
+            # for action in xrange(env.nlinks[n]):
+            #     reward, next_state = env.pseudostep(action)
                 #agent.learn(current_state, next_state, reward, action, done, env.nlinks)
+            action = agent.act(current_state, env.nlinks, True)
+
+            reward, next_state = env.pseudostep(action)
+
 
             action = agent.act(current_state, env.nlinks, True)
             state_pair, reward, done, _ = env.step(action)
@@ -133,7 +141,7 @@ def main():
             avg_route_test.append(float(env.routed_packets))
             #print("testing")
 
-            if t % 20000 == 0:
+            if t % 50000 == 0:
                 if env.routed_packets != 0:
                     print "q testing with callmean:{} time:{}, average delivery time:{}, length of average route:{}, r_sum_best:{}".format(
                         i, t, float(env.total_routing_time) / float(env.routed_packets),
@@ -153,21 +161,22 @@ def main():
                     plt.ylabel('Avg time in Test')
 
                     plt.show()
+#    return avg_delay, avg_route, avg_route_tes, avg_route_test, avg_t, avg_t_test
 
 
-    #rtrace.append(rewards)
-    #avg_delays.append(np.sum(avg_delay))
- #    print(avg_delay)
- #    x_rtrace = np.arange(0, len(avg_delay), 1)
- #    y_rtrace = np.array(avg_delay)
- #    plt.plot(x_rtrace, y_rtrace)
- # #    plt.plot(rtrace)
- #    plt.xlabel('Loads')
- #    plt.ylabel('Avg_time')
- # #
- #    plt.show()
+def ploting(avg_delay, avg_route, avg_route_tes, avg_route_test, avg_t, avg_t_test):
+    x_rtrace = np.arange(0, len(avg_t_test), 1)
+    y_rtrace = np.array(avg_t_test)
+    plt.plot(x_rtrace, y_rtrace)
+    #    plt.plot(rtrace)
+    ply.title("plot from functiun")
+    plt.xlabel('Iterations')
+    plt.ylabel('Avg time in Test')
+
+    plt.show()
 
 
 
 if __name__ == '__main__':
     main()
+    #ploting(avg_delay, avg_route, avg_route_tes, avg_route_test, avg_t, avg_t_test)

@@ -182,7 +182,7 @@ List *memq(item, in_list)
 /* error.c - XN error handling performed here
  */
 
-#include <varargs.h>
+#include <stdarg.h>
 #include <stdio.h>
 
 void XNfatal(va_alist)

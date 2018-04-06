@@ -27,7 +27,8 @@ class networkTabularQAgent(object):
             for dest in range(num_nodes):
                 for action in range(nlinks[src]):
                     #Initialize the reward with distance of shortestpath.
-                    self.q[src][dest][action] = distance[src][dest]
+                    #self.q[src][dest][action] = distance[src][dest]
+                    self.q[src][dest][action] = 0.01
 
     # def epsilon_greed(self, epsilon, s):
     #     #
@@ -37,6 +38,23 @@ class networkTabularQAgent(object):
     #         print("greedy! selected")
     #         return np.argmax(self.Q[s[0], s[1], :])
 
+    # choose action
+    def act_eps(self, state, nlinks, epsilon):
+        n = state[0]
+        dest = state[1]
+        # choose the smallest tx among neighbors
+        if np.random.rand() > epsilon:
+            best = self.q[n][dest][0]
+            best_action = 0
+            # Find the minimum action value, greedy
+            for action in range(nlinks[n]):
+                if self.q[n][dest][action] < best:  # + eps:
+                    best = self.q[n][dest][action]
+                    best_action = action
+        else:  # select random action from random neighbor
+            best_action = int(np.random.choice((0.0, nlinks[n])))
+
+        return best_action
 #choose action
     def act(self, state, nlinks,  best=False):
         n = state[0]
