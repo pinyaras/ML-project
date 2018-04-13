@@ -8,6 +8,7 @@ from operator import truediv
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+# from ggplot import *
 
 
 ####
@@ -25,7 +26,7 @@ def main():
 
     for i in range(1):
         callmean += 1.0
-
+        print(callmean)
         env.callmean = callmean
         done = False
         r_sum_random = r_sum_best = 0
@@ -61,8 +62,10 @@ def main():
                     reward, next_state = env.pseudostep(action)
                     agent.learn(current_state, next_state, reward, action, done, env.nlinks)
                 #Radnom action
-                action = agent.act(current_state, env.nlinks, True)
-                #action = agent.act_eps(current_state, env.nlinks, 0.1)
+                #action = agent.act(current_state, env.nlinks, True)
+                #action = agent.act_softmax(current_state, env.links)
+
+                action = agent.act_eps(current_state, env.nlinks, 0.1)
 
                 state_pair, reward, done, _ = env.step(action)
 
@@ -100,6 +103,7 @@ def main():
                         y_rtrace = np.array(avg_t)
 
                         plt.plot(x_rtrace, y_rtrace)
+                        plt.xticks(np.arange(min(x_rtrace), max(x_rtrace) + 1, 5000))
                         #    plt.plot(rtrace)
                         plt.xlabel('Iterations')
                         plt.ylabel('Avg time in Train')

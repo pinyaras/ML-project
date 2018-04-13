@@ -30,6 +30,7 @@ class networkTabularQAgent(object):
                     #self.q[src][dest][action] = distance[src][dest]
                     self.q[src][dest][action] = 0.01
 
+
     # def epsilon_greed(self, epsilon, s):
     #     #
     #     if np.random.rand() < epsilon:
@@ -73,6 +74,26 @@ class networkTabularQAgent(object):
 
         return best_action
 
+    def act_softmax(self, state, nlinks):
+        n = state[0]
+        dest = state[1]
+        # choose the smallest tx among neighbors
+        print(nlinks[n])
+        all_actions = np.array(self.q[n][dest][:len(nlinks[n])])
+        print(all_actions)
+        SM = self.softmax(all_actions)
+        select = np.random.choice(SM)
+        best_action = np.where(select)
+        return best_action
+
+    def softmax(x):
+
+        '''Compute softmax values of array x.
+
+        @param x the input array, vector
+        @return the softmax array
+        '''
+        return np.exp(x - np.min(x)) / np.sum(np.exp(x - np.min(x)))
 
     def learn(self, current_event, next_event, reward, action, done, nlinks):
 
