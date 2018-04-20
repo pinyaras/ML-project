@@ -63,9 +63,9 @@ def main():
                     agent.learn(current_state, next_state, reward, action, done, env.nlinks)
                 #Radnom action
                 #action = agent.act(current_state, env.nlinks, True)
-                #action = agent.act_softmax(current_state, env.links)
+                action = agent.act_softmax(current_state, env.links)
 
-                action = agent.act_eps(current_state, env.nlinks, 0.1)
+                #action = agent.act_eps(current_state, env.nlinks, 0.1)
 
                 state_pair, reward, done, _ = env.step(action)
 
@@ -120,7 +120,7 @@ def main():
     avg_route_test = []
     r_sum_best = 0
     i = 1
-    for t in range(50001):
+    for t in range(100001):
         if not done:
             current_state = state_pair[1]
             n = current_state[0]
@@ -145,7 +145,7 @@ def main():
             avg_route_test.append(float(env.routed_packets))
             #print("testing")
 
-            if t % 50000 == 0:
+            if t % 100000 == 0:
                 if env.routed_packets != 0:
                     print "q testing with callmean:{} time:{}, average delivery time:{}, length of average route:{}, r_sum_best:{}".format(
                         i, t, float(env.total_routing_time) / float(env.routed_packets),

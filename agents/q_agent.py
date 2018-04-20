@@ -71,29 +71,43 @@ class networkTabularQAgent(object):
                     best_action = action
         else: #select action from random neighbor
             best_action = int(np.random.choice((0.0, nlinks[n])))
+        #print(best_action)
 
         return best_action
 
     def act_softmax(self, state, nlinks):
         n = state[0]
         dest = state[1]
+        #print("state",state)
         # choose the smallest tx among neighbors
-        print(nlinks[n])
+        #print("nlinks",nlinks[n])
         all_actions = np.array(self.q[n][dest][:len(nlinks[n])])
-        print(all_actions)
-        SM = self.softmax(all_actions)
-        select = np.random.choice(SM)
-        best_action = np.where(select)
+        all_actions = -1*np.array(all_actions)
+        #print("all_action",all_actions)
+        prob = self.softmax(all_actions)
+        #print("prob",prob)
+        #select = np.random.choice(SM)
+        #pvals = [0.10, 0.25, 0.60, 0.05]
+        #select = np.random.multinomial(1, prob)[0][0]
+        best_action = np.where(np.random.multinomial(1, prob))[0][0]
+        #print("select",select)
+        #best_action = SM.index(select)
+        #best_action = np.where(prob == select)[0][0]
+        #print(best_action)
         return best_action
 
-    def softmax(x):
+    # def softmax(self, z):
+    #     return np.exp(-z) / np.sum(np.exp(-z), axis=1, keepdims=True)
+
+    def softmax(self, x):
 
         '''Compute softmax values of array x.
 
         @param x the input array, vector
         @return the softmax array
         '''
-        return np.exp(x - np.min(x)) / np.sum(np.exp(x - np.min(x)))
+        return np.exp(x - np.max(x)) / np.sum(np.exp(x - np.max(x)))
+        #return np.exp(x - np.max(x)) / np.sum(np.exp(x - np.max(x)))
 
     def learn(self, current_event, next_event, reward, action, done, nlinks):
 
