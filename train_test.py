@@ -23,7 +23,7 @@ def main():
     env = NetworkSimulatorEnv()
     state_pair = env._reset()
     agent = networkTabularQAgent(env.nnodes, env.nedges, env.distance, env.nlinks)
-
+    avg_train_test = []
     for i in range(1):
         callmean += 1.0
         print(callmean)
@@ -64,7 +64,7 @@ def main():
                 #Radnom action
                 #action = agent.act(current_state, env.nlinks, True)
                 action = agent.act_softmax(current_state, env.links)
-
+                #action = agent.act_eps_greedy_softmax(current_state, env.links, 0.9)
                 #action = agent.act_eps(current_state, env.nlinks, 0.1)
 
                 state_pair, reward, done, _ = env.step(action)
@@ -99,21 +99,23 @@ def main():
                                 avg_route[x] = 0.00000000000000000000000000000000000000001
 
                         avg_t = map(truediv, avg_delay, avg_route)
-                        x_rtrace = np.arange(0, len(avg_t), 1)
-                        y_rtrace = np.array(avg_t)
+                        avg_train_test.append(avg_t)
 
-                        plt.plot(x_rtrace, y_rtrace)
-                        plt.xticks(np.arange(min(x_rtrace), max(x_rtrace) + 1, 5000))
-                        #    plt.plot(rtrace)
-                        plt.xlabel('Iterations')
-                        plt.ylabel('Avg time in Train')
-
-                        plt.show()
+                        # x_rtrace = np.arange(0, len(avg_t), 1)
+                        # y_rtrace = np.array(avg_t)
+                        #
+                        # plt.plot(x_rtrace, y_rtrace)
+                        # plt.xticks(np.arange(min(x_rtrace), max(x_rtrace) + 1, 5000))
+                        # #    plt.plot(rtrace)
+                        # plt.xlabel('Iterations')
+                        # plt.ylabel('Avg time in Train')
+                        # plt.grid(True)
+                        # plt.show()
                         break
                         # print("state_r_sum_random", current_state)
     #Test
     #env = NetworkSimulatorEnv()
-    state_pair = env._reset()
+    #state_pair = env._reset()
     #agent = networkTabularQAgent(env.nnodes, env.nedges, env.distance, env.nlinks)
     done = False
     avg_delay_test = []
@@ -134,8 +136,8 @@ def main():
             reward, next_state = env.pseudostep(action)
 
 
-            action = agent.act(current_state, env.nlinks, True)
-            state_pair, reward, done, _ = env.step(action)
+            # action = agent.act(current_state, env.nlinks, True)
+            # state_pair, reward, done, _ = env.step(action)
 
             next_state = state_pair[0]
             #agent.learn(current_state, next_state, reward, action, done, env.nlinks)
@@ -155,16 +157,32 @@ def main():
                         if avg_route_test[x] == 0.0:
                             avg_route_test[x] = 0.00000000000000000000000000000000000000001
 
+
+
                     avg_t_test = map(truediv, avg_delay_test, avg_route_test)
                     #print(avg_t_test)
+
+                    x_rtrace = np.arange(0, len(avg_t), 1)
+                    y_rtrace = np.array(avg_t)
+
+                    plt.plot(x_rtrace, y_rtrace)
+                    plt.xticks(np.arange(min(x_rtrace), max(x_rtrace) + 1, 5000))
+                    #    plt.plot(rtrace)
+                    plt.xlabel('Iterations')
+                    plt.ylabel('Avg time in Train')
+                    plt.grid(True)
+                    #plt.show()
                     x_rtrace = np.arange(0, len(avg_t_test), 1)
                     y_rtrace = np.array(avg_t_test)
                     plt.plot(x_rtrace, y_rtrace)
                     #    plt.plot(rtrace)
                     plt.xlabel('Iterations')
                     plt.ylabel('Avg time in Test')
-
+                    plt.grid(True)
                     plt.show()
+
+
+
 #    return avg_delay, avg_route, avg_route_tes, avg_route_test, avg_t, avg_t_test
 
 

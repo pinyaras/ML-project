@@ -96,6 +96,27 @@ class networkTabularQAgent(object):
         #print(best_action)
         return best_action
 
+    def act_eps_greedy_softmax(self, state, nlinks, epsilon):
+        n = state[0]
+        dest = state[1]
+        # choose the smallest tx among neighbors
+        if np.random.rand() > epsilon:
+            best = self.q[n][dest][0]
+            best_action = 0
+            # Find the minimum action value, greedy
+            for action in range(nlinks[n]):
+                if self.q[n][dest][action] < best:  # + eps:
+                    best = self.q[n][dest][action]
+                    best_action = action
+        else:  # select random action from random neighbor
+            #best_action = int(np.random.choice((0.0, nlinks[n])))
+            all_actions = np.array(self.q[n][dest][:len(nlinks[n])])
+            all_actions = -1 * np.array(all_actions)
+            prob = self.softmax(all_actions)
+            best_action = np.where(np.random.multinomial(1, prob))[0][0]
+
+        return best_action
+
     # def softmax(self, z):
     #     return np.exp(-z) / np.sum(np.exp(-z), axis=1, keepdims=True)
 
